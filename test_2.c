@@ -4,29 +4,39 @@
 
 int
 main(int argc, char *argv[]) {
-    int x1 = getreadcount();
-
     int rc = fork();
-
-    int total = 0;
-    int i;
-    for (i = 0; i < 100000; i++) {
-	char buf[100];
-	(void) read(4, buf, 1);
-    }
+    int base = getreadcount();
+    int right = 0;
 
     if (rc > 0) {
 	(void) wait();
-	int x2 = getreadcount();
-	total += (x2 - x1);
-	printf(1, "Output: %d\n", total);
-	printf(1, "Answer: %d\n", 100000);
-	if(total == 100000){
-	  printf(1, "You are right!\n");
-	}
-	else{
-	  printf(1, "You are wrong..\n");
+	for (int i = 0; i < 1000; i++) {
+	    char buf[100];
+	    (void) read(4, buf, 1);
+        }
+	int parent = getreadcount();
+        printf(1, "Parent: %d\n", parent-base);
+	if(parent == 1000){
+	    right = 1;
 	}
     }
+    else {
+	for (int i = 0; i < 500; i++) {
+	    char buf[100];
+	    (void) read(4, buf, 1);
+	}
+	int child = getreadcount();
+        printf(1, "Child: %d\n", child-base);
+	if(child - base == 500){
+	  right = 1;
+	}
+    }
+    if(right){
+      printf(1, "You are right!\n");
+    }
+    else{
+      printf(1, "You are wrong..\n");
+    }
+    
     exit();
 }
