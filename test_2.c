@@ -16,7 +16,7 @@ main(int argc, char *argv[]) {
         }
 	int parent = getreadcount();
         printf(1, "Parent: %d\n", parent-base);
-	if(parent == 1000){
+	if(parent - base == 1000){
 	    right = 1;
 	}
     }
