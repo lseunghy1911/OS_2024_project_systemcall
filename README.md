@@ -1,3 +1,3 @@
-# EEE3535.02-00 Operating System Course
+# EEE3535.01-00 Operating Systems
 
 ## project#1: System Call
