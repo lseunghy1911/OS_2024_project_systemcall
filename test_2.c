@@ -4,52 +4,55 @@
 
 int
 main(int argc, char *argv[]) {
-    char buf[100];
-	int base_read = getreadcount();
-    int base_write = getwritecount();
-	
-    for (int i = 0; i < 1000; i++) (void) read(4, buf, 1);
+    int base = getancestorcount();
+    
+    int rc0 = fork();
 
-    int rc = fork();
-    int right = 0;
-
-    if (rc > 0) {
+    // Process A & B
+    if (rc0 > 0) {
 	    (void) wait();
-		for (int i = 0; i < 1000; i++) {
-	    	(void) read(4, buf, 1);
-        	if(i % 3 == 0) (void) write(4, buf, 1);
-    	}
-
-		int parent_read = getreadcount();
-    	int parent_write = getwritecount();
-
-    	printf(1, "Parent Read: %d\n", parent_read - base_read);
-    	printf(1, "Parent Write: %d\n", parent_write - base_write);
-
-		if(parent_read - base_read == 2000)	right = 1;
-    	if(parent_write - base_write == 334) right *= 1;
-		
+       	
+        int rc1 = fork();
+        
+        //Process A
+        if (rc1 > 0) {
+            (void) wait();
+	        int parentB = getancestorcount();
+            printf(1, "Ancestors of Process A after fork(): %d\n", parentB - base);
+            if(parentB == 2) printf(1, "You are right! (Process A)\n");
+            else printf(1, "You are wrong.. (Process A)\n");
+        }
+        //Process B
+        else {
+	        int childB = getancestorcount();
+            printf(1, "Ancestors of Process B after fork(): %d\n", childB - base);
+	        if(childB == 3) printf(1, "You are right! (Process B)\n");
+            else printf(1, "You are wrong.. (Process B)\n");
+        }
     }
-    else {
-		char buf[100];
-		for (int i = 0; i < 500; i++) {
-	    	(void) read(4, buf, 1);
-      		(void) write(4, buf, 1);
-		}
 
-		int child_read = getreadcount();
-  		int child_write = getwritecount();
-
-        printf(1, "Child Read: %d\n", child_read - base_read);
-        printf(1, "Child Write: %d\n", child_write - base_write);
-
-		if(child_read - base_read == 1500) right = 1;
- 		if(child_write - base_write == 500)	right *= 1;
-    }
+    // Process C & D
+    else { 
+        (void) wait();
+	    
+        int rc2 = fork();
     
-    if(right) printf(1, "You are right!\n");
-    
-    else printf(1, "You are wrong..\n");
+        // Process C
+        if (rc2 > 0) {
+            (void) wait();
+	        int parentC = getancestorcount();
+            printf(1, "Ancestors of Process C after fork(): %d\n", parentC - base);
+            if(parentC == 3) printf(1, "You are right! (Process C)\n");
+            else printf(1, "You are wrong.. (Process C)\n");
+        }
+        // Process D
+        else {
+	        int childC = getancestorcount();
+            printf(1, "Ancestors of Process D after fork(): %d\n", childC - base);
+	        if(childC == 4) printf(1, "You are right! (Process D)\n");
+            else printf(1, "You are wrong.. (Process D)\n");
+        }
+     }
     
     exit();
 }
